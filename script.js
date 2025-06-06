@@ -53,10 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加重置棋盘按钮的点击事件
     const resetBtn = document.querySelector('.option-btn:nth-child(2)');
     resetBtn.addEventListener('click', function() {
-        // 清除所有棋子
-        const boardPieces = document.querySelectorAll('.board-piece');
-        boardPieces.forEach(piece => piece.remove());
-        currentBoardPieces = [];
+        // 添加确认对话框
+        if (confirm('确定要清空棋盘上的所有棋子吗？')) {
+            // 清除所有棋子
+            const boardPieces = document.querySelectorAll('.board-piece');
+            boardPieces.forEach(piece => piece.remove());
+            currentBoardPieces = [];
+        }
     });
     
     // 添加开始游戏和暂停游戏按钮的点击事件
