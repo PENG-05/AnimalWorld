@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>土耳其方块</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>这就是土耳其方块吗?</h1>
+        <p class="instructions">
+            用法: 点击下方的横子添加到棋盘中. 然后点击模拟运行<br>
+            模拟运行会返回算法的堆叠结果, 不代表是完全正确的结果
+        </p>
+        
+        <div class="options-bar">
+            <button class="option-btn">是否连续</button>
+            <button class="option-btn">删除模式</button>
+            <button class="option-btn">重置棋盘</button>
+        </div>
+        
+        <div class="actions-bar">
+            <button class="action-btn">下落</button>
+            <button class="action-btn">整体上移</button>
+            <button class="action-btn">移除运行</button>
+            <button class="action-btn">整套操作</button>
+            <button class="action-btn">冰冻BOSS</button>
+            <button class="action-btn primary">模拟运行</button>
+        </div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- 棋盘将由JavaScript动态生成 -->
+        </div>
+        
+        <div class="piece-selector">
+            <button class="piece-btn" data-piece="1">1</button>
+            <button class="piece-btn" data-piece="2">2</button>
+            <button class="piece-btn" data-piece="3">3</button>
+            <button class="piece-btn" data-piece="4">4</button>
+            <button class="piece-btn" data-piece="5">5</button>
+        </div>
+        
+        <div class="notes">
+            <p>PS: 点击棋子移改变长度, 拖拽棋子调整位置</p>
+            <p>下方棋子上的数字是深度, 可以拖拽下方的棋子到棋盘上</p>
+            <p>最下面一行是留给出现的棋子</p>
+            <p>红色棋子是BOSS, 每次移除时将只会留下一格</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
