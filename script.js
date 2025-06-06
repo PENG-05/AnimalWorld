@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentBoardPieces = [];
     let originalPieceElement = null; // 用于跟踪拖拽的原始棋子元素
     let tetrisGame; // 游戏逻辑实例
+    let isDeleteMode = false; // 跟踪删除模式状态
     
     // 创建9x11的棋盘
     for (let i = 0; i < 11; i++) {
@@ -34,6 +35,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化游戏逻辑
     tetrisGame = new TetrisGame(gameBoard, currentBoardPieces);
+    
+    // 添加删除模式按钮的点击事件
+    const deleteBtn = document.querySelector('.option-btn:nth-child(1)');
+    deleteBtn.addEventListener('click', function() {
+        isDeleteMode = !isDeleteMode;
+        this.classList.toggle('active', isDeleteMode);
+        
+        // 根据当前删除模式状态更新UI
+        if (isDeleteMode) {
+            gameBoard.classList.add('delete-mode');
+        } else {
+            gameBoard.classList.remove('delete-mode');
+        }
+    });
+    
+    // 添加重置棋盘按钮的点击事件
+    const resetBtn = document.querySelector('.option-btn:nth-child(2)');
+    resetBtn.addEventListener('click', function() {
+        // 清除所有棋子
+        const boardPieces = document.querySelectorAll('.board-piece');
+        boardPieces.forEach(piece => piece.remove());
+        currentBoardPieces = [];
+    });
     
     // 添加开始游戏和暂停游戏按钮的点击事件
     const actionButtons = document.querySelectorAll('.action-btn');
@@ -226,22 +250,32 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.opacity = '1';
         });
         
-        // 添加点击修改长度功能
+        // 添加点击功能（修改长度或删除）
         pieceElement.addEventListener('click', function(e) {
-            const newWidth = prompt('请输入新的棋子长度（1-9）：', width);
-            if (newWidth && !isNaN(newWidth)) {
-                const widthValue = parseInt(newWidth);
-                if (widthValue >= 1 && widthValue <= 9) {
-                    // 检查新长度是否会导致棋子超出棋盘
-                    const currentCol = parseInt(pieceElement.style.left) / cellWidth;
-                    if (currentCol + widthValue <= 9) {
-                        pieceElement.dataset.width = widthValue;
-                        pieceElement.style.width = (cellWidth * widthValue) + 'px';
+            if (isDeleteMode) {
+                // 删除模式下点击棋子
+                const pieceId = this.id;
+                // 从数组中删除棋子数据
+                currentBoardPieces = currentBoardPieces.filter(p => p.id !== pieceId);
+                // 从DOM中删除棋子
+                this.remove();
+            } else {
+                // 正常模式下点击棋子（修改长度）
+                const newWidth = prompt('请输入新的棋子长度（1-9）：', width);
+                if (newWidth && !isNaN(newWidth)) {
+                    const widthValue = parseInt(newWidth);
+                    if (widthValue >= 1 && widthValue <= 9) {
+                        // 检查新长度是否会导致棋子超出棋盘
+                        const currentCol = parseInt(pieceElement.style.left) / cellWidth;
+                        if (currentCol + widthValue <= 9) {
+                            pieceElement.dataset.width = widthValue;
+                            pieceElement.style.width = (cellWidth * widthValue) + 'px';
+                        } else {
+                            alert('棋子长度过长，会超出棋盘边界！');
+                        }
                     } else {
-                        alert('棋子长度过长，会超出棋盘边界！');
+                        alert('请输入1到9之间的数字！');
                     }
-                } else {
-                    alert('请输入1到9之间的数字！');
                 }
             }
         });

@@ -179,3 +179,21 @@ h1 {
     z-index: 5;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
+/* 删除模式相关样式 */
+.delete-mode {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.delete-mode .board-piece {
+    cursor: pointer;
+}
+
+.delete-mode .board-piece:hover {
+    box-shadow: 0 0 8px #ff6b6b;
+}
+
+.option-btn.active {
+    background-color: #ff6b6b;
+    color: white;
+}

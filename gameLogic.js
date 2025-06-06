@@ -45,7 +45,7 @@ class TetrisGame {
             }
         }
 
-        // 检查是否有棋子到达顶部（第二行，因为第一行是预判区）
+        // 检查是否有棋子到达顶部
         const gameOver = this.currentBoardPieces.some(piece => piece.row === 1);
         if (gameOver) {
             this.endGame();
