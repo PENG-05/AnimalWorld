@@ -207,6 +207,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 创建棋子在新位置
         createPieceOnBoard(row, col, pieceWidth, pieceColor);
         
+        // 在放置棋子后检查并消除满行
+        tetrisGame.updatePiecesPosition(); // 确保数据是最新的
+        tetrisGame.checkAndClearFullRows();
+        tetrisGame.applyGravity();
+        
         // 重置拖拽状态
         draggedPiece = null;
         originalPieceElement = null;

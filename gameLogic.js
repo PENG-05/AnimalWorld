@@ -115,6 +115,9 @@ class TetrisGame {
         // 应用重力，使棋子下落
         this.applyGravity();
         
+        // 检查并消除满行
+        this.checkAndClearFullRows();
+        
         // 更新DOM中棋子的位置
         this.renderPieces();
     }
@@ -206,5 +209,100 @@ class TetrisGame {
                 }
             }
         });
+    }
+    
+    // 新增：检查并消除满行
+    checkAndClearFullRows() {
+        // 对于每一行（除了最后一行，最后一行是放新棋子的区域）
+        for (let row = 0; row < this.boardRows - 1; row++) {
+            if (this.isRowFull(row)) {
+                this.clearFullRow(row);
+                // 消除行后，应用重力使上方的棋子下落
+                this.applyGravity();
+            }
+        }
+    }
+    
+    // 新增：检查一行是否已满
+    isRowFull(row) {
+        // 创建一个数组表示这一行的每一列是否被占据
+        const colsOccupied = new Array(this.boardCols).fill(false);
+        
+        // 检查每个棋子是否占据了这一行的某些列
+        for (const piece of this.currentBoardPieces) {
+            if (piece.row === row) {
+                for (let i = 0; i < piece.width; i++) {
+                    const col = piece.col + i;
+                    if (col >= 0 && col < this.boardCols) {
+                        colsOccupied[col] = true;
+                    }
+                }
+            }
+        }
+        
+        // 如果所有列都被占据，则行已满
+        return colsOccupied.every(occupied => occupied);
+    }
+    
+    // 修改：清除满行
+    clearFullRow(row) {
+        // 首先检查这一行是否包含boss棋子（红色棋子）
+        const hasBoss = this.currentBoardPieces.some(piece => 
+            piece.row === row && 
+            (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)')
+        );
+        
+        if (hasBoss) {
+            // 如果有boss棋子，只缩短boss棋子，其他棋子保持不变
+            this.currentBoardPieces.forEach(piece => {
+                if (piece.row === row && 
+                   (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)')) {
+                    this.shrinkBossPiece(piece);
+                }
+            });
+        } else {
+            // 如果没有boss棋子，删除这一行的所有棋子
+            const piecesToRemove = [];
+            
+            this.currentBoardPieces.forEach(piece => {
+                // 如果棋子完全在这一行，则删除
+                if (piece.row === row) {
+                    piecesToRemove.push(piece.id);
+                }
+            });
+            
+            // 删除需要删除的棋子
+            piecesToRemove.forEach(id => {
+                // 从DOM中删除
+                const element = document.getElementById(id);
+                if (element) element.remove();
+                
+                // 从数组中删除
+                this.currentBoardPieces = this.currentBoardPieces.filter(p => p.id !== id);
+            });
+        }
+    }
+    
+    // 保持不变：缩短BOSS棋子
+    shrinkBossPiece(boss) {
+        const bossElement = document.getElementById(boss.id);
+        if (!bossElement) return;
+        
+        // 获取单元格宽度
+        const cellWidth = document.querySelector('.cell').offsetWidth;
+        
+        // 减少BOSS宽度
+        boss.width -= 1;
+        
+        // 如果BOSS宽度减为0，则删除
+        if (boss.width <= 0) {
+            bossElement.remove();
+            this.currentBoardPieces = this.currentBoardPieces.filter(p => p.id !== boss.id);
+            return;
+        }
+        
+        // 更新DOM元素
+        bossElement.dataset.width = boss.width;
+        bossElement.style.width = (cellWidth * boss.width) + 'px';
     }
 }
