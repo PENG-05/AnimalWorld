@@ -13,41 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 添加示例方块（蓝色和粉色方块）
-    // 添加蓝色方块
-    const blueBlockPositions = [
-        { row: 7, col: 2 },
-        { row: 7, col: 3 },
-        { row: 7, col: 4 },
-        { row: 7, col: 5 },
-        { row: 7, col: 6 }
-    ];
-    
-    blueBlockPositions.forEach(pos => {
-        const cell = gameBoard.querySelector(
-            `[data-row="${pos.row}"][data-col="${pos.col}"]`
-        );
-        if (cell) {
-            cell.classList.add('blue-piece');
-        }
-    });
-    
-    // 添加粉色方块
-    const pinkBlockPositions = [
-        { row: 8, col: 3 },
-        { row: 8, col: 4 },
-        { row: 8, col: 5 }
-    ];
-    
-    pinkBlockPositions.forEach(pos => {
-        const cell = gameBoard.querySelector(
-            `[data-row="${pos.row}"][data-col="${pos.col}"]`
-        );
-        if (cell) {
-            cell.classList.add('pink-piece');
-        }
-    });
-    
     // 按钮功能实现（示例部分功能）
     const actionButtons = document.querySelectorAll('.action-btn');
     actionButtons.forEach(btn => {

@@ -123,7 +123,7 @@ h1 {
 }
 
 .piece-btn:nth-child(5) {
-    background-color: #ff8a65;
+    background-color: red;
     color: white;
 }
 
