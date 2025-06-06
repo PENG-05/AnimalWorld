@@ -70,6 +70,21 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', () => {
                 tetrisGame.pauseGame();
             });
+        } else if (btn.textContent === '冰冻BOSS') {
+            // 新增：冰冻BOSS按钮点击事件
+            btn.addEventListener('click', function() {
+                if (this.textContent === '冰冻BOSS') {
+                    tetrisGame.freezeBoss();
+                    this.textContent = '退出冰冻BOSS';
+                } else {
+                    tetrisGame.unfreezeBoard();
+                    this.textContent = '冰冻BOSS';
+                }
+            });
+        } else if (btn.textContent === '整体上移') {
+            btn.addEventListener('click', () => {
+                tetrisGame.moveAllPiecesUp();
+            });
         }
     });
     

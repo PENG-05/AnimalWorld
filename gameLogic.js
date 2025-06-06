@@ -7,11 +7,13 @@ class TetrisGame {
         this.gameSpeed = 1000; // 每秒移动一次，单位毫秒
         this.boardRows = 11;
         this.boardCols = 9;
+        this.isFrozen = false; // 新增：跟踪冰冻状态
+        this.gravityInterval = null; // 新增：冰冻时只处理重力的定时器
     }
 
     // 开始游戏
     startGame() {
-        if (this.isGameRunning) return;
+        if (this.isGameRunning || this.isFrozen) return;
         
         this.isGameRunning = true;
         this.gameInterval = setInterval(() => {
@@ -31,6 +33,64 @@ class TetrisGame {
     endGame() {
         this.pauseGame();
         alert("游戏结束！");
+    }
+
+    // 新增：冰冻BOSS功能
+    freezeBoss() {
+        if (this.isFrozen) return;
+        
+        // 暂停向上移动
+        this.pauseGame();
+        this.isFrozen = true;
+        
+        // 缩短红色棋子（BOSS）长度为1
+        this.shortenBossPieces();
+        
+        // 保持下落功能，启动一个单独的间隔只处理下落
+        this.gravityInterval = setInterval(() => {
+            this.updatePiecesPosition();
+            this.applyGravity();
+            this.renderPieces();
+        }, this.gameSpeed);
+    }
+    
+    // 新增：解除冰冻功能
+    unfreezeBoard() {
+        if (!this.isFrozen) return;
+        
+        // 清除只做下落的间隔
+        clearInterval(this.gravityInterval);
+        this.isFrozen = false;
+        
+        // 恢复向上移动
+        this.startGame();
+    }
+    
+    // 新增：缩短红色棋子（BOSS）长度为1
+    shortenBossPieces() {
+        // 先根据DOM更新当前棋子信息
+        this.updatePiecesPosition();
+        
+        // 找出所有红色棋子（BOSS）
+        const bossPieces = this.currentBoardPieces.filter(piece => {
+            // 判断颜色是否为红色
+            return piece.color === 'red' || piece.color === 'rgb(255, 0, 0)';
+        });
+        
+        // 缩短红色棋子长度为1
+        bossPieces.forEach(piece => {
+            // 获取DOM元素
+            const pieceElement = document.getElementById(piece.id);
+            if (pieceElement && piece.width > 1) {
+                pieceElement.dataset.width = '1';
+                // 获取单元格宽度以正确设置新宽度
+                const cellWidth = document.querySelector('.cell').offsetWidth;
+                pieceElement.style.width = cellWidth + 'px';
+                
+                // 更新内部数据结构
+                piece.width = 1;
+            }
+        });
     }
 
     // 向上移动所有棋子
