@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let startX, startY;
     let currentBoardPieces = [];
     let originalPieceElement = null; // 用于跟踪拖拽的原始棋子元素
+    let tetrisGame; // 游戏逻辑实例
     
     // 创建9x11的棋盘
     for (let i = 0; i < 11; i++) {
@@ -30,7 +31,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // 设置游戏棋盘的拖拽事件
     gameBoard.addEventListener('dragover', handleDragOver);
     gameBoard.addEventListener('drop', handleDrop);
-      
+    
+    // 初始化游戏逻辑
+    tetrisGame = new TetrisGame(gameBoard, currentBoardPieces);
+    
+    // 添加开始游戏和暂停游戏按钮的点击事件
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(btn => {
+        if (btn.textContent === '开始游戏') {
+            btn.addEventListener('click', () => {
+                tetrisGame.startGame();
+            });
+        } else if (btn.textContent === '暂停游戏') {
+            btn.addEventListener('click', () => {
+                tetrisGame.pauseGame();
+            });
+        }
+    });
     
     // 处理棋子拖拽开始
     function handlePieceDragStart(e) {
