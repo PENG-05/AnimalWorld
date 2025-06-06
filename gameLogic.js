@@ -223,7 +223,7 @@ class TetrisGame {
         }
     }
     
-    // 新增：检查一行是否已满
+    // 修改：检查一行是否已满
     isRowFull(row) {
         // 创建一个数组表示这一行的每一列是否被占据
         const colsOccupied = new Array(this.boardCols).fill(false);
@@ -246,41 +246,46 @@ class TetrisGame {
     
     // 修改：清除满行
     clearFullRow(row) {
-        // 首先检查这一行是否包含boss棋子（红色棋子）
+        // 首先检查这一行是否包含野牛棋子（红色棋子）
         const hasBoss = this.currentBoardPieces.some(piece => 
             piece.row === row && 
             (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)')
         );
         
+        // 需要删除的棋子ID列表
+        const piecesToRemove = [];
+        
         if (hasBoss) {
-            // 如果有boss棋子，只缩短boss棋子，其他棋子保持不变
+            // 如果有野牛棋子，找出这一行所有非野牛棋子进行删除
             this.currentBoardPieces.forEach(piece => {
-                if (piece.row === row && 
-                   (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)')) {
-                    this.shrinkBossPiece(piece);
+                if (piece.row === row) {
+                    if (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)') {
+                        // 野牛棋子缩短宽度
+                        this.shrinkBossPiece(piece);
+                    } else {
+                        // 非野牛棋子删除
+                        piecesToRemove.push(piece.id);
+                    }
                 }
             });
         } else {
-            // 如果没有boss棋子，删除这一行的所有棋子
-            const piecesToRemove = [];
-            
+            // 如果没有野牛棋子，删除这一行的所有棋子
             this.currentBoardPieces.forEach(piece => {
-                // 如果棋子完全在这一行，则删除
                 if (piece.row === row) {
                     piecesToRemove.push(piece.id);
                 }
             });
-            
-            // 删除需要删除的棋子
-            piecesToRemove.forEach(id => {
-                // 从DOM中删除
-                const element = document.getElementById(id);
-                if (element) element.remove();
-                
-                // 从数组中删除
-                this.currentBoardPieces = this.currentBoardPieces.filter(p => p.id !== id);
-            });
         }
+        
+        // 删除需要删除的棋子
+        piecesToRemove.forEach(id => {
+            // 从DOM中删除
+            const element = document.getElementById(id);
+            if (element) element.remove();
+            
+            // 从数组中删除
+            this.currentBoardPieces = this.currentBoardPieces.filter(p => p.id !== id);
+        });
     }
     
     // 保持不变：缩短BOSS棋子
