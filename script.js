@@ -61,17 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 这里可以添加模拟运行的实际逻辑
             }
         });
-    });
-    
-    // 棋子选择按钮
-    const pieceButtons = document.querySelectorAll('.piece-btn');
-    pieceButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const pieceType = this.getAttribute('data-piece');
-            console.log(`选择了棋子类型: ${pieceType}`);
-            // 这里可以添加选择棋子的实际逻辑
-        });
-    });
+    });   
     
     // 这里可以添加更多功能实现
     // 如拖拽棋子、调整棋子长度、游戏逻辑等
