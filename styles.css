@@ -40,27 +40,96 @@ h1 {
     flex-wrap: wrap;
 }
 
-.option-btn, .action-btn {
-    padding: 8px 15px;
-    border: 1px solid #ddd;
-    background-color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s;
+/* 按钮基本样式 */
+button {
+  font-family: 'Microsoft YaHei', sans-serif;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-.option-btn:hover, .action-btn:hover {
-    background-color: #f5f5f5;
+/* 选项按钮样式 */
+.option-btn {
+  background-color: #f0f0f0;
+  color: #555;
+  margin: 0 5px;
+  border: 1px solid #ddd;
 }
 
+.option-btn:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.option-btn:active {
+  background-color: #d0d0d0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+}
+
+/* 动作按钮样式 */
+.action-btn {
+  background-color: #6c7ae0;
+  color: white;
+  margin: 0 5px;
+}
+
+.action-btn:hover {
+  background-color: #5a66cc;
+  box-shadow: 0 4px 8px rgba(108, 122, 224, 0.3);
+  transform: translateY(-2px);
+}
+
+.action-btn:active {
+  background-color: #4d58b3;
+  transform: translateY(1px);
+}
+
+/* 主要行动按钮 */
 .action-btn.primary {
-    background-color: #1890ff;
-    color: white;
-    border-color: #1890ff;
+  background-color: #ff5757;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
 }
 
 .action-btn.primary:hover {
-    background-color: #40a9ff;
+  background-color: #ff3b3b;
+  box-shadow: 0 5px 10px rgba(255, 87, 87, 0.4);
+}
+
+.action-btn.primary:active {
+  background-color: #e63f3f;
+}
+
+/* 棋子选择按钮 */
+.piece-btn {
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+  background-color: #ffd54f;
+  color: #5d4037;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piece-btn:hover {
+  background-color: #ffca28;
+  transform: scale(1.05);
+}
+
+.piece-btn:active {
+  background-color: #ffb300;
+  transform: scale(0.98);
 }
 
 .game-board {
