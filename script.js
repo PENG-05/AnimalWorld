@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化游戏逻辑
     tetrisGame = new TetrisGame(gameBoard, currentBoardPieces);
     
+    // 初始化游戏提示系统
+    const gameTips = new GameTips(tetrisGame);
+    gameTips.initialize();
+    
     // 添加删除模式按钮的点击事件
     const deleteBtn = document.querySelector('.option-btn:nth-child(1)');
     deleteBtn.addEventListener('click', function() {
@@ -152,12 +156,21 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         if (!draggedPiece) return;
         
-        // 在拖拽过程中显示预览
-        const cell = e.target.closest('.cell');
-        if (cell) {
-            const row = parseInt(cell.dataset.row);
-            const col = parseInt(cell.dataset.col);
-            
+        // 使用鼠标位置直接计算预览位置
+        const rect = gameBoard.getBoundingClientRect();
+        const cellWidth = rect.width / 9;
+        const cellHeight = rect.height / 11;
+        
+        // 计算鼠标相对于棋盘的位置
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // 计算对应的单元格位置
+        const col = Math.floor(x / cellWidth);
+        const row = Math.floor(y / cellHeight);
+        
+        // 确保位置在棋盘范围内
+        if (row >= 0 && row < 11 && col >= 0 && col < 9) {
             // 清除之前的预览
             clearPreview();
             
@@ -169,17 +182,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // 处理放置
     function handleDrop(e) {
         e.preventDefault();
-        const cell = e.target.closest('.cell');
-        if (!cell) {
-            // 如果是从棋盘拖拽的，恢复原来的不透明度
-            if (originalPieceElement) {
-                originalPieceElement.style.opacity = '1';
-            }
-            return;
-        }
         
-        const row = parseInt(cell.dataset.row);
-        const col = parseInt(cell.dataset.col);
+        // 使用与dragOver相同的逻辑计算放置位置
+        const rect = gameBoard.getBoundingClientRect();
+        const cellWidth = rect.width / 9;
+        const cellHeight = rect.height / 11;
+        
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        let col = Math.floor(x / cellWidth);
+        let row = Math.floor(y / cellHeight);
+        
+        // 确保位置在有效范围内
+        if (row < 0) row = 0;
+        if (row >= 11) row = 10;
+        if (col < 0) col = 0;
         
         // 解析传递的数据
         const data = JSON.parse(e.dataTransfer.getData('text'));
@@ -187,17 +205,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const pieceColor = data.pieceColor;
         const isFromSelector = data.isFromSelector;
         
+        // 调整列位置确保棋子完全在棋盘内
+        if (col + pieceWidth > 9) col = 9 - pieceWidth;
+        
         // 清除预览
         clearPreview();
-        
-        // 确保棋子能完全放在棋盘上
-        if (col + pieceWidth > 9) {
-            // 如果是从棋盘拖拽的，恢复原来的不透明度
-            if (originalPieceElement) {
-                originalPieceElement.style.opacity = '1';
-            }
-            return;
-        }
         
         // 如果是从棋盘拖拽的棋子，则移除原棋子
         if (!isFromSelector && originalPieceElement) {
@@ -220,6 +232,39 @@ document.addEventListener('DOMContentLoaded', function() {
         originalPieceElement = null;
     }
     
+    // 显示预览
+    function showPreview(row, col, width, color) {
+        // 检查是否超出范围并调整位置
+        if (col < 0) col = 0;
+        if (col + width > 9) col = 9 - width;
+        
+        for (let i = 0; i < width; i++) {
+            const previewCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
+            if (previewCell) {
+                previewCell.classList.add('preview-cell');
+                previewCell.style.backgroundColor = color;
+                previewCell.style.opacity = '0.6';
+                
+                // 添加更明显的视觉边界
+                previewCell.style.border = '2px dashed white';
+                
+                // 添加网格标识，让用户清楚地看到这是几个单元格
+                const cellNumber = document.createElement('div');
+                cellNumber.className = 'cell-number';
+                cellNumber.textContent = i + 1;
+                cellNumber.style.position = 'absolute';
+                cellNumber.style.top = '50%';
+                cellNumber.style.left = '50%';
+                cellNumber.style.transform = 'translate(-50%, -50%)';
+                cellNumber.style.color = 'white';
+                cellNumber.style.fontWeight = 'bold';
+                cellNumber.style.fontSize = '14px';
+                cellNumber.style.textShadow = '1px 1px 1px black';
+                previewCell.appendChild(cellNumber);
+            }
+        }
+    }
+    
     // 清除预览
     function clearPreview() {
         const previewCells = document.querySelectorAll('.preview-cell');
@@ -227,22 +272,14 @@ document.addEventListener('DOMContentLoaded', function() {
             cell.classList.remove('preview-cell');
             cell.style.backgroundColor = '';
             cell.style.opacity = '';
-        });
-    }
-    
-    // 显示预览
-    function showPreview(row, col, width, color) {
-        // 检查是否超出范围
-        if (col + width > 9) return;
-        
-        for (let i = 0; i < width; i++) {
-            const previewCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col + i}"]`);
-            if (previewCell) {
-                previewCell.classList.add('preview-cell');
-                previewCell.style.backgroundColor = color;
-                previewCell.style.opacity = '0.5';
+            cell.style.border = ''; // 移除边框
+            
+            // 移除单元格编号
+            const cellNumber = cell.querySelector('.cell-number');
+            if (cellNumber) {
+                cell.removeChild(cellNumber);
             }
-        }
+        });
     }
     
     // 创建棋子在棋盘上
