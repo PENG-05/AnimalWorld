@@ -171,17 +171,132 @@ class GameTips {
         let pieceToMove = piecesCopy.find(p => p.id === piece.id);
         pieceToMove.col = newCol;
         
-        // 模拟重力
-        this.simulateGravity(piecesCopy);
+        // 执行完整的模拟周期（移动、下落、消除、再下落...）
+        const simulationResult = this.simulateFullCycle(piecesCopy);
         
-        // 计算可以消除的行数和行分数
-        let score = this.countClearableRows(piecesCopy);
+        // 基础分数是消除的总行数
+        let score = simulationResult.totalRowsCleared;
         
-        // 如果能消除含有红色棋子的行，给更高的分数
-        score += this.countBossRowsClearing(piecesCopy) * 0.5;
+        // 增加连锁反应权重 (每多一次连锁反应，分数增加50%)
+        score *= (1 + (simulationResult.chainReactions * 0.5));
+        
+        // 增加深层消除奖励 (每消除一个深层行增加30%分数)
+        score += simulationResult.depthBonus;
+        
+        // BOSS行消除奖励
+        score += simulationResult.bossRowsCleared * 1.2;
         
         return score;
     }
+
+    simulateFullCycle(pieces) {
+        let totalRowsCleared = 0;
+        let chainReactions = 0;
+        let bossRowsCleared = 0;
+        let depthBonus = 0;
+        
+        // 首先应用重力
+        this.simulateGravity(pieces);
+        
+        // 模拟消除-下落循环
+        let rowsCleared;
+        do {
+            // 收集要清除的行
+            const rowsToClear = [];
+            for (let row = 0; row < this.tetrisGame.boardRows - 1; row++) {
+                if (this.isRowFullSimulated(row, pieces)) {
+                    rowsToClear.push(row);
+                    totalRowsCleared++;
+                    
+                    // 检查是否包含BOSS
+                    const hasBoss = pieces.some(piece => 
+                        piece.row === row && 
+                        (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)')
+                    );
+                    if (hasBoss) bossRowsCleared++;
+                    
+                    // 计算深度奖励 (深层消除给更高权重)
+                    // 越接近底部(不包括最后一行)的行价值越高
+                    depthBonus += this.calculateDepthBonus(row);
+                }
+            }
+            
+            rowsCleared = rowsToClear.length;
+            if (rowsCleared > 0) {
+                // 如果是连锁反应 (不是第一轮消除)，增加连锁计数
+                if (chainReactions > 0) {
+                    chainReactions++;
+                } else if (rowsCleared > 0) {
+                    chainReactions = 1;
+                }
+                
+                // 模拟消除行
+                this.simulateClearRows(pieces, rowsToClear);
+                
+                // 再次应用重力
+                this.simulateGravity(pieces);
+            }
+        } while (rowsCleared > 0);
+        
+        return {
+            totalRowsCleared,
+            chainReactions,
+            bossRowsCleared,
+            depthBonus
+        };
+    }
+
+    calculateDepthBonus(row) {
+        // 给底部区域的行更高权重 (0是顶部，boardRows-2是最深层非底部行)
+        // 深层行权重公式：1 + (行深度 / 总深度) * 最大奖励系数
+        const depth = row; // 行索引直接代表深度
+        const maxDepth = this.tetrisGame.boardRows - 2;
+        const maxBonus = 2.0; // 最大奖励系数
+        
+        return (depth / maxDepth) * maxBonus;
+    }
+
+
+    simulateClearRows(pieces, rowsToClear) {
+        // 排序行，从下到上消除
+        rowsToClear.sort((a, b) => b - a);
+        
+        for (const row of rowsToClear) {
+            // 找出所有在该行的棋子
+            const piecesToModify = [];
+            const piecesToRemove = [];
+            
+            pieces.forEach((piece, index) => {
+                if (piece.row === row) {
+                    if (piece.color === 'red' || piece.color === 'rgb(255, 0, 0)') {
+                        // BOSS棋子缩短一格
+                        piece.width -= 1;
+                        if (piece.width <= 0) {
+                            piecesToRemove.push(index);
+                        } else {
+                            piecesToModify.push(piece);
+                        }
+                    } else {
+                        // 普通棋子直接移除
+                        piecesToRemove.push(index);
+                    }
+                }
+            });
+            
+            // 从数组中移除要删除的棋子 (从后向前删除以保持索引有效)
+            for (let i = piecesToRemove.length - 1; i >= 0; i--) {
+                pieces.splice(piecesToRemove[i], 1);
+            }
+            
+            // 向上移动所有行号大于当前行的棋子
+            for (const piece of pieces) {
+                if (piece.row < row) {  // 因为坐标系是上小下大
+                    piece.row += 1;  // 所以小于被消除行的棋子需要向下移动一行
+                }
+            }
+        }
+    }
+    
 
     // 模拟重力
     simulateGravity(pieces) {
