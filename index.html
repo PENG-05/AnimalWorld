@@ -1,57 +1,102 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动物世界</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <!-- <h1>动物世界</h1> -->
-        <p class="instructions">
-            用法: 点击下方的横子添加到棋盘中. 然后点击模拟运行<br>
-            模拟运行会返回算法的堆叠结果, 不代表是完全正确的结果
-        </p>
-        
-        <div class="options-bar">
-            <!-- <button class="option-btn">是否连续</button> -->
-            <button class="option-btn">删除模式</button>
-            <button class="option-btn">重置棋盘</button>
-        </div>
-        
-        <div class="actions-bar">
-            <!-- <button class="action-btn">下落</button> -->
-            <!-- <button class="action-btn">整体上移</button> -->
-            <button class="action-btn">暂停游戏</button>
-            <!-- <button class="action-btn">整套操作</button> -->
-            <button class="action-btn">冰冻BOSS</button>
-            <button class="action-btn primary">开始游戏</button>
-        </div>
-        
-        <div class="game-board" id="gameBoard">
-            <!-- 棋盘将由JavaScript动态生成 -->
-        </div>
-        
-        <div class="piece-selector">
-            <button class="piece-btn" data-piece="1">1</button>
-            <button class="piece-btn" data-piece="2">2</button>
-            <button class="piece-btn" data-piece="3">3</button>
-            <button class="piece-btn" data-piece="4">4</button>
-            <button class="piece-btn" data-piece="5">5</button>
-        </div>
-        
-        <div class="notes">
-            <p>PS: 点击棋子移改变长度, 拖拽棋子调整位置</p>
-            <p>下方棋子上的数字是深度, 可以拖拽下方的棋子到棋盘上</p>
-            <p>最下面一行是留给出现的棋子</p>
-            <p>红色棋子是BOSS, 消除所在行，会把红色棋子缩短一格</p>
-            <p>使用冰冻BOSS，红色棋子只会留下一格</p>
-        </div>
-    </div>
-    
-    <script src="gameLogic.js"></script>
-    <script src="gameTips.js"></script>
-    <script src="script.js"></script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>动物世界</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="container">
+			<!-- <h1>动物世界</h1> -->
+			<p class="instructions">
+				用法: 点击下方的横子添加到棋盘中. 然后点击模拟运行<br />
+				模拟运行会返回算法的堆叠结果, 不代表是完全正确的结果
+			</p>
+
+			<div class="options-bar">
+				<!-- <button class="option-btn">是否连续</button> -->
+				<button class="option-btn">删除模式</button>
+				<button class="option-btn">重置棋盘</button>
+			</div>
+
+			<!-- <div class="actions-bar">
+				<button class="action-btn">下落</button>
+				<button class="action-btn">整体上移</button>
+				<button class="action-btn">整套操作</button>	
+			</div> -->
+
+			<div class="game-board" id="gameBoard">
+				<!-- 棋盘将由JavaScript动态生成 -->
+			</div>
+
+			<div class="piece-selector">
+				<button class="piece-btn" data-piece="1">1</button>
+				<button class="piece-btn" data-piece="2">2</button>
+				<button class="piece-btn" data-piece="3">3</button>
+				<button class="piece-btn" data-piece="4">4</button>
+				<button class="piece-btn" data-piece="5">5</button>
+			</div>
+			<div class="actions-bar">
+				<button class="action-btn">冰冻BOSS</button>
+				<button class="action-btn primary">开始游戏</button>
+				<button class="action-btn">暂停游戏</button>
+			</div>
+
+			<div class="notes">
+				<p>PS: 点击棋子移改变长度, 拖拽棋子调整位置</p>
+				<p>下方棋子上的数字是深度, 可以拖拽下方的棋子到棋盘上</p>
+				<p>最下面一行是留给出现的棋子</p>
+				<p>红色棋子是BOSS, 消除所在行，会把红色棋子缩短一格</p>
+				<p>使用冰冻BOSS，红色棋子只会留下一格</p>
+				<p>注意：如果是电脑端，请按f11进入全屏模式，体验感更加</p>
+			</div>
+
+			<div class="donation-section">
+				<h3 class="donation-title">打赏</h3>
+				<div class="donation-content">
+					<p>如果你觉得这个对你有帮助，你可以帮作者买一杯咖啡表示支持，创作不易，谢谢老板！❤❤❤</p>
+					<p class="donation-en">If you think this project is helpful to you, you can help the author buy a cup of coffee to show your support!</p>
+					<div class="pay-img">
+						<img src="./pay-image/wechat.jpg" alt="微信支付" />
+						<img src="./pay-image/alipay.jpg" alt="支付宝" />
+					</div>
+				</div>
+
+				<p class="copyright">著作权归 街角音20区-角色ID-400004000048417 所有 !!!</p>
+			</div>
+		</div>
+
+		<script src="gameLogic.js"></script>
+		<script src="gameTips.js"></script>
+		<script src="script.js"></script>
+		<script>
+			// 禁用F12和右键菜单的代码
+			document.addEventListener('keydown', function (e) {
+				// 禁用 F12
+				if (e.key === 'F12' || e.keyCode === 123) {
+					e.preventDefault();
+					return false;
+				}
+
+				// 禁用 Ctrl+Shift+I (Chrome开发者工具快捷键)
+				if (
+					(e.ctrlKey && e.shiftKey && e.keyCode === 73) ||
+					// 禁用 Ctrl+Shift+J (Chrome控制台)
+					(e.ctrlKey && e.shiftKey && e.keyCode === 74) ||
+					// 禁用 Ctrl+U (查看源代码)
+					(e.ctrlKey && e.keyCode === 85)
+				) {
+					e.preventDefault();
+					return false;
+				}
+			});
+
+			// 禁用右键菜单
+			document.addEventListener('contextmenu', function (e) {
+				e.preventDefault();
+				return false;
+			});
+		</script>
+	</body>
 </html>
